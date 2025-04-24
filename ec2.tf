@@ -1,6 +1,6 @@
 # configured aws provider with proper credentials
 provider "aws" {
-  region  = "us-east-1"
+  region  = "ap-southeast-2"
   profile = "terraform-user"
 }
 
@@ -8,9 +8,9 @@ provider "aws" {
 # store the terraform state file in s3
 terraform {
   backend "s3" {
-    bucket  = "aosnote-terraform-state-bucket"
+    bucket  = "maddy-terraform-state-bucket"
     key     = "build/terraform.tfstate"
-    region  = "us-east-1"
+    region  = "ap-southeast-2"
     profile = "terraform-user"
   }
 }
@@ -58,7 +58,7 @@ resource "aws_security_group" "ec2_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["112.134.215.180/32"]
   }
 
   egress {
@@ -94,10 +94,10 @@ data "aws_ami" "amazon_linux_2" {
 # launch the ec2 instance and install website
 resource "aws_instance" "ec2_instance" {
   ami                    = data.aws_ami.amazon_linux_2.id
-  instance_type          = "t2.micro"
+  instance_type          = "t3.micro"
   subnet_id              = aws_default_subnet.default_az1.id
   vpc_security_group_ids = [aws_security_group.ec2_security_group.id]
-  key_name               = "myec2key"
+  key_name               = "my-ec2key"
   user_data              = file("install_techmax.sh")
 
   tags = {
